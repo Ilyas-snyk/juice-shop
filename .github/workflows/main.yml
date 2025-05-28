@@ -12,32 +12,33 @@ jobs:
     environment: snyk-npm
     runs-on: ubuntu-latest
 
-strategy:
-  matrix:
-    node-version: [16.x]
+    strategy:
+      matrix:
+        node-version: [16.x]
 
-steps:
-  - uses: actions/checkout@v2
-  - name: Use Node.js ${{ matrix.node-version }}
-    uses: actions/setup-node@v2
-    with:
-      node-version: ${{ matrix.node-version }}
-      cache: 'npm'
+    steps:
+      - uses: actions/checkout@v2
 
-  - name: Setup Snyk + snyk-to-html
-    run: |
-      npm install snyk -g
-      npm install snyk-to-html -g
-      snyk auth ${{ secrets.SNYK_AUTH }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-  - name: Snyk Open Source
-    run: |
-      snyk monitor
+      - name: Setup Snyk + snyk-to-html
+        run: |
+          npm install snyk -g
+          npm install snyk-to-html -g
+          snyk auth ${{ secrets.SNYK_AUTH }}
 
-  - name: Snyk Code
-    run: |
-      snyk code test || true
+      - name: Snyk Open Source
+        run: |
+          snyk monitor
 
-  - name: Snyk IaC
-    run: |
-      snyk iac test --report || true
+      - name: Snyk Code
+        run: |
+          snyk code test || true
+
+      - name: Snyk IaC
+        run: |
+          snyk iac test --report || true
